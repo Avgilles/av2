@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Article = require('./models/article');
-const articleRouter = require('./routes/articles')
+const articleRouter = require('./routes/articles');
+const methodOverride = require('method-override');
 const app = express();
 
 mongoose.connect('mongodb://localhost/newDB', {
     useNewUrlParser: true,
-    useUnifiedTopology:true
+    useUnifiedTopology:true,
+    useCreateIndex:true
 });
 mongoose.connection.once('open', function (){
     console.log('connection is made');
@@ -18,6 +20,8 @@ mongoose.connection.once('open', function (){
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({extended: false}));
+
+app.use(methodOverride('_method'));
 
 app.get("/", async (req, res) => {
     const articles = await Article.find().sort({
